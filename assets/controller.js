@@ -18,6 +18,9 @@
     const OBSTACLE_SIZE_HEIGHT = 33;
     const OBSTACLE_MOVE_SPEED = 3.25;
 
+    const TEXT_POS_X = 20;
+    const TEXT_POS_Y = 40;
+
     const MAX_FLOAT_TIME = 450;
     const MAX_JUMP_HEIGHT = 260;
     const MAX_OBSTACLES = 4;
@@ -37,6 +40,7 @@
     var isKeyPressed = false;
     var currentPlayerPositionY = PLAYER_POS_Y;
     var playerScore = 0;
+    var timeLock = null;
 
     function startGame() {
         registerControls();
@@ -44,20 +48,29 @@
     };
 
     function registerControls() {
-        var timeLock = null;
         window.onkeydown = function(e) {
             if (isKeyPressed || !isSpacebarEvent(e)) {
                 return;
             }
-
-            isPlayerJumping = true;
-            isKeyPressed = true;
-
-            clearTimeout(timeLock);
-            timeLock = setTimeout(function() {
-                isPlayerJumping = false;
-            }, MAX_FLOAT_TIME);
+            onJumpEvent();
         };
+
+        canvas.ontouchstart = function(e) {
+            if (isKeyPressed) {
+                return;
+            }
+            onJumpEvent();
+        };
+    };
+
+    function onJumpEvent() {
+        isPlayerJumping = true;
+        isKeyPressed = true;
+
+        clearTimeout(timeLock);
+        timeLock = setTimeout(function() {
+            isPlayerJumping = false;
+        }, MAX_FLOAT_TIME);
     };
 
     function isSpacebarEvent(e) {
@@ -169,7 +182,7 @@
         context.clearRect(0, 0, GAME_SIZE_WIDTH, GAME_SIZE_HEIGHT);
 
         context.font = "30px Arial";
-        context.fillText(playerScore, 20, 40);
+        context.fillText(playerScore, TEXT_POS_X, TEXT_POS_Y);
 
         context.drawImage(SPRITE_SPENSAUR, PLAYER_POS_X, currentPlayerPositionY, PLAYER_SIZE_WIDTH, PLAYER_SIZE_HEIGHT);
 
